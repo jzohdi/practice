@@ -29,6 +29,7 @@ pyramid = [
     [ 4, 62, 98, 27, 23,  9, 70, 98, 73, 93, 38, 53, 60,  4, 23],
     ]
 
+# Solve with recursive Tree
 class Tree(object):
     def __init__(self, pyr, start, level):
         if level < len(pyr):
@@ -44,3 +45,36 @@ class Tree(object):
             self.value = 0
 pyrTree = Tree(pyramid, 0, 0)
 print(pyrTree.value)
+
+# Below both work better with very large pyramids
+
+#solve with simple addition iteration from bottom 
+
+def longSlide(pyramid):
+    for x in range(len(pyramid) - 2, -1, -1):
+        print(x)
+        for y in range(len(pyramid[x])):
+            if pyramid[x+1][y] >= pyramid[x+1][y+1]:
+                pyramid[x][y] = int(pyramid[x][y]) + int(pyramid[x+1][y])
+            else:
+                pyramid[x][y] = int(pyramid[x][y]) + int(pyramid[x+1][y+1])
+    print(pyramid)
+longSlide(pyramid)
+
+# solve with recursion and cache
+
+def longSlide(pyramid):
+    maxlevel = len(pyramid) - 1
+    cache = {}
+    def recur(pyramid, y, level):
+        if level < maxlevel:
+            if '{},{}'.format(y, level) not in cache:
+                cache['{},{}'.format(y, level)] = max([recur(pyramid, y, level+1), recur(pyramid, y+1, level+1)])
+            return pyramid[level][y] + cache['{},{}'.format(y, level)]
+        else:
+            return pyramid[level][y]
+    
+    return recur(pyramid, 0, 0)
+    
+    
+print(longSlide(pyramid))
